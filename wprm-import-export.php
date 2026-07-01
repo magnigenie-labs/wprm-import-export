@@ -169,6 +169,19 @@ function wprm_seed_default_templates() {
 register_activation_hook( WPRM_IMP_EXP_FILE, 'activate_wprm_import_export' );
 
 /**
+ * Automatically check and create the database table if it doesn't exist.
+ */
+function wprm_check_database_table() {
+	global $wpdb;
+	$table_name = $wpdb->prefix . 'wprm_import_export_data';
+
+	if ( $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $table_name ) ) !== $table_name ) {
+		activate_wprm_import_export();
+	}
+}
+add_action( 'init', 'wprm_check_database_table' );
+
+/**
  * Currently plugin version.
  * Start at version 1.0.0
  * Rename this for your plugin and update it as you release new versions.
