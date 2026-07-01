@@ -3,7 +3,7 @@ Contributors: magnigenie
 Tags: wp responsive menu, import, export, menu templates, settings migration
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,6 +18,10 @@ WP Responsive Menu - Import/Export plugin adds robust import and export capabili
 3. Access the demo manager from the 'WPR Menu Demo' menu in your WordPress Dashboard.
 
 == Changelog ==
+
+= 1.0.5 =
+* Improved: Created a premium card layout for the templates dashboard with hover animations, rounded corners, clean flex layouts, and color-coded buttons.
+* Fixed: Enqueued scripts and styles now use the dynamic plugin version constant to prevent browser caching of old JS/CSS files, resolving issues where button click handlers weren't firing.
 
 = 1.0.4 =
 * Added: Delete Template button in the admin dashboard. This allows administrators to easily delete custom, duplicate, or unwanted templates securely from both the database and the uploads folder.
