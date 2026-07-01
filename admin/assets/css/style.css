@@ -1,0 +1,23 @@
+div.gallery {
+	margin: 5px;
+	border: 1px solid #ccc;
+	float: left;
+	width: 180px;
+} 
+div.gallery:hover {
+	border: 1px solid #777;
+}
+div.gallery img {
+	width: 100%;
+	height: auto;
+}
+div.desc {
+	padding: 15px;
+	text-align: center;
+}
+div.form-group label {
+	padding-right: 20px;
+}
+div.form-group {
+	padding-bottom: 10px;
+}/*---wpr-menu-add-demo-page--*/.wprmenu-adddemo-parent-wrap form .form-input.py-2{    background: #fff;    padding: 40px 40px;    display: inline-block;    position: relative;    box-sizing: border-box;	box-shadow: 0 1px 1px rgb(0 0 0 / 4%);    border: 1px solid #c3c4c7;}.wprmenu-adddemo-parent-wrap form .form-input.py-2 input.btnRegister {    background: #2271b1;    border-color: #2271b1;    color: #fff;    text-shadow: none;    display: inline-block;    text-decoration: none;    font-size: 13px;    line-height: 2.15384615;    min-height: 30px;    margin: 0;    padding: 0 10px;    cursor: pointer;    border-width: 1px;    border-style: solid;    -webkit-appearance: none;    border-radius: 3px;    white-space: nowrap;    box-sizing: border-box;}.wprmenu-adddemo-parent-wrap form .form-input.py-2 input.btnRegister:hover {    background: #135e96;    border-color: #135e96;    color: #fff;}.wprmenu-adddemo-parent-wrap form .form-input.py-2 div.form-group label:first-child{	width: 100px;	display: -webkit-inline-box;	vertical-align: baseline;}.wprmenu-adddemo-parent-wrap form .form-input.py-2 div.form-group {    padding-bottom: 10px;    margin-bottom: 10px;}/*---wpr-menu-demo-page--*/.wprmenu-demo-parent-wrap {    display: flex;    flex-direction: column;}.wprmenu-demo-parent-wrap div.gallery img {	max-width: 100px;	height: 100px;	margin: 0 auto;	text-align: center;	display: block;}.wprmenu-demo-parent-wrap div.gallery {	width: 150px;	padding: 10px 0;	background-color: #fff;	box-shadow: 0 1px 1px rgb(0 0 0 / 4%);	border: 1px solid #c3c4c7;}
