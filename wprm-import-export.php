@@ -16,7 +16,7 @@
  * Plugin Name:       WP Responsive Menu - Import/Export
  * Plugin URI:        wprm_import_export
  * Description:       This Plugin Will Add Import/Export Functionality to WP Responsive Menu.
- * Version:           1.0.5
+ * Version:           1.0.6
  * Author:            Magnigenie
  * Author URI:        https://restropress.com/
  * License:           GPL-2.0+
@@ -114,6 +114,36 @@ function wprm_seed_default_templates() {
 			'filetype'  => 'Free',
 			'thumbnail' => 'demo1.png',
 			'filename'  => 'freedemo1.json',
+		),
+		array(
+			'demoname'  => 'Sunset Minimalist',
+			'filetype'  => 'Free',
+			'thumbnail' => 'demo1.png',
+			'filename'  => 'sunset-minimalist.json',
+		),
+		array(
+			'demoname'  => 'Ocean Breeze',
+			'filetype'  => 'Free',
+			'thumbnail' => 'demo3.png',
+			'filename'  => 'ocean-breeze.json',
+		),
+		array(
+			'demoname'  => 'Forest Pine',
+			'filetype'  => 'Free',
+			'thumbnail' => 'demo1.png',
+			'filename'  => 'forest-pine.json',
+		),
+		array(
+			'demoname'  => 'Royal Amethyst',
+			'filetype'  => 'Free',
+			'thumbnail' => 'demo4.png',
+			'filename'  => 'royal-amethyst.json',
+		),
+		array(
+			'demoname'  => 'Charcoal Sleek',
+			'filetype'  => 'Free',
+			'thumbnail' => 'demo2.png',
+			'filename'  => 'charcoal-sleek.json',
 		),
 		array(
 			'demoname'  => 'Pro Demo 1',
@@ -236,11 +266,8 @@ function wprm_check_database_table() {
 		}
 	}
 
-	// If the new table is still empty after migration/merge, seed default templates
-	$new_count = $wpdb->get_var( "SELECT COUNT(*) FROM $new_table" );
-	if ( intval( $new_count ) === 0 ) {
-		wprm_seed_default_templates();
-	}
+	// Seed default templates (idempotent: checks for existence first)
+	wprm_seed_default_templates();
 
 	// Clean up duplicate Pro Demo 4 if it exists in the database
 	$wpdb->query( "DELETE t1 FROM $new_table t1 INNER JOIN $new_table t2 WHERE t1.id > t2.id AND t1.filename = t2.filename AND t1.filename = 'wprmenu-settings-export-01-15-2025-06-41-05.json'" );
@@ -252,7 +279,7 @@ add_action( 'init', 'wprm_check_database_table' );
  * Start at version 1.0.0
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'WPRM_IMPORT_EXPORT_VERSION', '1.0.5' );
+define( 'WPRM_IMPORT_EXPORT_VERSION', '1.0.6' );
 
 require WPRM_IMP_EXP_DIR . 'includes/class-wprm-import-export.php';
 require WPRM_IMP_EXP_DIR . 'admin/class-admin-wprm-import-export.php';
