@@ -16,7 +16,7 @@
  * Plugin Name:       WP Responsive Menu - Import/Export
  * Plugin URI:        wprm_import_export
  * Description:       This Plugin Will Add Import/Export Functionality to WP Responsive Menu.
- * Version:           1.1.0
+ * Version:           1.1.1
  * Author:            Magnigenie
  * Author URI:        https://restropress.com/
  * License:           GPL-2.0+
@@ -178,10 +178,11 @@ function wprm_seed_default_templates() {
 		$dst_demo_file = path_join( $dst_demo_dir, $tpl['filename'] );
 		$dst_thumb_file = path_join( $dst_thumb_dir, $tpl['thumbnail'] );
 
-		if ( file_exists( $src_demo_file ) && ! file_exists( $dst_demo_file ) ) {
+		// Always copy files to ensure they are up to date!
+		if ( file_exists( $src_demo_file ) ) {
 			copy( $src_demo_file, $dst_demo_file );
 		}
-		if ( file_exists( $src_thumb_file ) && ! file_exists( $dst_thumb_file ) ) {
+		if ( file_exists( $src_thumb_file ) ) {
 			copy( $src_thumb_file, $dst_thumb_file );
 		}
 
@@ -290,11 +291,56 @@ function wprm_clear_client_transient() {
 add_action( 'admin_init', 'wprm_clear_client_transient' );
 
 /**
+ * Hook into option update to preserve user's current menu icon settings
+ * and dynamically fetch/use the website's custom logo during template import.
+ */
+function wprm_preserve_settings_during_import( $value, $old_value, $option ) {
+	if ( defined( 'DOING_AJAX' ) && DOING_AJAX && isset( $_POST['action'] ) && $_POST['action'] === 'wprmenu_import_settings' ) {
+		if ( is_array( $value ) && is_array( $old_value ) ) {
+			// 1. Preserve all menu icon settings (layout, colors, animations, size, classes)
+			$icon_keys = array(
+				'menu_icon_animation',
+				'custom_menu_bg_color',
+				'menu_icon_color',
+				'menu_icon_hover_color',
+				'custom_menu_top',
+				'custom_menu_left',
+				'menu_symbol_pos',
+				'menu_icon_type',
+				'custom_menu_font_size',
+				'custom_menu_icon_top',
+				'menu_icon',
+				'menu_close_icon'
+			);
+
+			foreach ( $icon_keys as $key ) {
+				if ( isset( $old_value[$key] ) ) {
+					$value[$key] = $old_value[$key];
+				}
+			}
+
+			// 2. Get the logo dynamically as per the website logo (via Theme Customizer)
+			$custom_logo_id = get_theme_mod( 'custom_logo' );
+			if ( $custom_logo_id ) {
+				$logo_url = wp_get_attachment_image_url( $custom_logo_id, 'full' );
+				if ( $logo_url ) {
+					$value['bar_logo'] = $logo_url;
+				}
+			} elseif ( isset( $old_value['bar_logo'] ) && ! empty( $old_value['bar_logo'] ) ) {
+				$value['bar_logo'] = $old_value['bar_logo'];
+			}
+		}
+	}
+	return $value;
+}
+add_filter( 'pre_update_option_wprmenu_options', 'wprm_preserve_settings_during_import', 10, 3 );
+
+/**
  * Currently plugin version.
  * Start at version 1.0.0
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'WPRM_IMPORT_EXPORT_VERSION', '1.1.0' );
+define( 'WPRM_IMPORT_EXPORT_VERSION', '1.1.1' );
 
 require WPRM_IMP_EXP_DIR . 'includes/class-wprm-import-export.php';
 require WPRM_IMP_EXP_DIR . 'admin/class-admin-wprm-import-export.php';

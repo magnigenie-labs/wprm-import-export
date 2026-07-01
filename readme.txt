@@ -3,7 +3,7 @@ Contributors: magnigenie
 Tags: wp responsive menu, import, export, menu templates, settings migration
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,6 +18,10 @@ WP Responsive Menu - Import/Export plugin adds robust import and export capabili
 3. Access the demo manager from the 'WPR Menu Demo' menu in your WordPress Dashboard.
 
 == Changelog ==
+
+= 1.1.1 =
+* Fixed: Updated seeder logic to force-overwrite default template assets, resolving issues where old thumbnail images wouldn't update on the server.
+* Fixed: Added option interceptor filters. During template import, the user's current menu icon configuration (animations, colors, sizes, positions) is preserved and the site's logo is fetched dynamically from the theme customizer.
 
 = 1.1.0 =
 * Improved: Created a single mobile screen mockup for all the 5 new templates (Sunset Minimalist, Ocean Breeze, Forest Pine, Royal Amethyst, and Charcoal Sleek) to show the menu interface realistically without background clutter.
