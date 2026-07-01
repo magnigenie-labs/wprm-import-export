@@ -16,7 +16,7 @@
  * Plugin Name:       WP Responsive Menu - Import/Export
  * Plugin URI:        wprm_import_export
  * Description:       This Plugin Will Add Import/Export Functionality to WP Responsive Menu.
- * Version:           1.1.2
+ * Version:           1.1.4
  * Author:            Magnigenie
  * Author URI:        https://restropress.com/
  * License:           GPL-2.0+
@@ -347,14 +347,21 @@ function wprm_check_database_table() {
 add_action( 'init', 'wprm_check_database_table' );
 
 /**
- * Force clear the client-side template list cache when admins visit the import page.
+ * Force fetch and cache the secure HTTPS API response for the template list
+ * when the admin is on the menu demo manager or import page.
  */
-function wprm_clear_client_transient() {
+function wprm_force_update_demo_list() {
 	if ( is_admin() && isset( $_GET['page'] ) && in_array( $_GET['page'], array( 'wpr-menu-demo', 'wprmenu-demo-import' ), true ) ) {
-		delete_transient( 'wprm_api_demo_items_list' );
+		$response = wp_remote_get( 'https://demo.magnigenie.com/wp-json/wprmenu-server/v1' );
+		if ( ! is_wp_error( $response ) && isset( $response['body'] ) ) {
+			$items = json_decode( $response['body'] );
+			if ( $items ) {
+				set_transient( 'wprm_api_demo_items_list', $items, 60 * 60 * 24 );
+			}
+		}
 	}
 }
-add_action( 'admin_init', 'wprm_clear_client_transient' );
+add_action( 'admin_init', 'wprm_force_update_demo_list' );
 
 /**
  * Hook into option update to preserve user's current menu icon settings
@@ -406,7 +413,7 @@ add_filter( 'pre_update_option_wprmenu_options', 'wprm_preserve_settings_during_
  * Start at version 1.0.0
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'WPRM_IMPORT_EXPORT_VERSION', '1.1.2' );
+define( 'WPRM_IMPORT_EXPORT_VERSION', '1.1.4' );
 
 require WPRM_IMP_EXP_DIR . 'includes/class-wprm-import-export.php';
 require WPRM_IMP_EXP_DIR . 'admin/class-admin-wprm-import-export.php';

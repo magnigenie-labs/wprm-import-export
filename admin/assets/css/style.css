@@ -189,7 +189,7 @@
 
 /* Force import showcase thumbnails to fit within their boundaries */
 .wprmenu-content.image-overlay .wprmenu-content-image {
-    background-size: contain !important;
+    background-size: cover !important;
     background-color: #f8fafc !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
