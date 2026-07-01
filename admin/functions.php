@@ -130,6 +130,53 @@ function edit_demo_name() {
 }
 add_action( 'wp_ajax_edit_demo_and_thumbnail', 'edit_demo_name' );
 
+function delete_demo_template_ajax() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( 'Forbidden', 403 );
+    }
+
+    check_ajax_referer( 'wprm_ajax_nonce', 'security' );
+
+    global $wpdb;
+
+    if ( isset($_POST['demo_id']) ) {
+        $table_name = $wpdb->prefix . 'wprm_import_export_data';
+        $demo_id = intval( $_POST['demo_id'] );
+
+        $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE id = %d", $demo_id ) );
+
+        if ( $row ) {
+            $wpdb->delete( $table_name, array( 'id' => $demo_id ) );
+
+            // Only delete files from uploads folder if no other template is using them
+            $json_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_name WHERE filename = %s", $row->filename ) );
+            if ( intval( $json_count ) === 0 ) {
+                $json_path = wprm_get_upload_path( 'demo' ) . '/' . $row->filename;
+                if ( file_exists( $json_path ) ) {
+                    unlink( $json_path );
+                }
+            }
+
+            $thumb_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_name WHERE thumbnail = %s", $row->thumbnail ) );
+            if ( intval( $thumb_count ) === 0 ) {
+                $thumb_path = wprm_get_upload_path( 'thumbnail' ) . '/' . $row->thumbnail;
+                if ( file_exists( $thumb_path ) ) {
+                    unlink( $thumb_path );
+                }
+            }
+
+            wp_send_json_success();
+        } else {
+            wp_send_json_error('Template not found.');
+        }
+    } else {
+        wp_send_json_error('Invalid request.');
+    }
+
+    wp_die();
+}
+add_action( 'wp_ajax_delete_demo_template', 'delete_demo_template_ajax' );
+
 
  
 

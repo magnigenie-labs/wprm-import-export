@@ -116,7 +116,32 @@ jQuery(document).ready(function($) {
         });
     });
 
-    
+    // Delete template button click event
+    $('.delete-demo-button').click(function(e) {
+        e.preventDefault();
+
+        var demoID = $(this).data('demo-id');
+
+        if (confirm('Are you sure you want to delete this template?')) {
+            $.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'delete_demo_template',
+                    demo_id: demoID,
+                    security: thumbnaildata.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Template deleted successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error deleting template.');
+                    }
+                }
+            });
+        }
+    });
 });
 
 
