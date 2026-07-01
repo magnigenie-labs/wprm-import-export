@@ -16,7 +16,7 @@
  * Plugin Name:       WP Responsive Menu - Import/Export
  * Plugin URI:        wprm_import_export
  * Description:       This Plugin Will Add Import/Export Functionality to WP Responsive Menu.
- * Version:           1.1.1
+ * Version:           1.1.2
  * Author:            Magnigenie
  * Author URI:        https://restropress.com/
  * License:           GPL-2.0+
@@ -146,28 +146,94 @@ function wprm_seed_default_templates() {
 			'filename'  => 'charcoal-sleek.json',
 		),
 		array(
-			'demoname'  => 'Pro Demo 1',
+			'demoname'  => 'Classic Corporate',
 			'filetype'  => 'Pro',
 			'thumbnail' => 'demo2.png',
-			'filename'  => 'wprmenu-settings-export-01-13-2025-12-00-15.json',
+			'filename'  => 'pro-classic-corporate.json',
 		),
 		array(
-			'demoname'  => 'Pro Demo 2',
+			'demoname'  => 'Neon Cyberpunk',
 			'filetype'  => 'Pro',
 			'thumbnail' => 'demo3.png',
-			'filename'  => 'wprmenu-settings-export-01-15-2025-06-09-49.json',
+			'filename'  => 'pro-neon-cyberpunk.json',
 		),
 		array(
-			'demoname'  => 'Pro Demo 3',
+			'demoname'  => 'Elegance Premium',
 			'filetype'  => 'Pro',
 			'thumbnail' => 'demo4.png',
-			'filename'  => 'wprmenu-settings-export-01-15-2025-06-21-50.json',
+			'filename'  => 'pro-elegance-premium.json',
 		),
 		array(
-			'demoname'  => 'Pro Demo 4',
+			'demoname'  => 'Retro Arcade',
 			'filetype'  => 'Pro',
 			'thumbnail' => 'demo5.png',
-			'filename'  => 'wprmenu-settings-export-01-15-2025-06-41-05.json',
+			'filename'  => 'pro-retro-arcade.json',
+		),
+		array(
+			'demoname'  => 'Eco Greenery',
+			'filetype'  => 'Pro',
+			'thumbnail' => 'demo2.png',
+			'filename'  => 'pro-eco-greenery.json',
+		),
+		array(
+			'demoname'  => 'Coffee Shop',
+			'filetype'  => 'Pro',
+			'thumbnail' => 'demo3.png',
+			'filename'  => 'pro-coffee-shop.json',
+		),
+		array(
+			'demoname'  => 'Tech Start',
+			'filetype'  => 'Pro',
+			'thumbnail' => 'demo4.png',
+			'filename'  => 'pro-tech-start.json',
+		),
+		array(
+			'demoname'  => 'Art & Creative',
+			'filetype'  => 'Pro',
+			'thumbnail' => 'demo5.png',
+			'filename'  => 'pro-art-creative.json',
+		),
+		array(
+			'demoname'  => 'Luxury Pearl',
+			'filetype'  => 'Pro',
+			'thumbnail' => 'demo2.png',
+			'filename'  => 'pro-luxury-pearl.json',
+		),
+		array(
+			'demoname'  => 'Modern Agency',
+			'filetype'  => 'Pro',
+			'thumbnail' => 'demo3.png',
+			'filename'  => 'pro-modern-agency.json',
+		),
+		array(
+			'demoname'  => 'WooCommerce Store',
+			'filetype'  => 'Pro',
+			'thumbnail' => 'demo4.png',
+			'filename'  => 'pro-woocommerce-store.json',
+		),
+		array(
+			'demoname'  => 'Travel Explorer',
+			'filetype'  => 'Pro',
+			'thumbnail' => 'demo5.png',
+			'filename'  => 'pro-travel-explorer.json',
+		),
+		array(
+			'demoname'  => 'Fitness Peak',
+			'filetype'  => 'Pro',
+			'thumbnail' => 'demo2.png',
+			'filename'  => 'pro-fitness-peak.json',
+		),
+		array(
+			'demoname'  => 'Foodie Delight',
+			'filetype'  => 'Pro',
+			'thumbnail' => 'demo3.png',
+			'filename'  => 'pro-foodie-delight.json',
+		),
+		array(
+			'demoname'  => 'Vintage Gold',
+			'filetype'  => 'Pro',
+			'thumbnail' => 'demo4.png',
+			'filename'  => 'pro-vintage-gold.json',
 		),
 	);
 
@@ -340,7 +406,7 @@ add_filter( 'pre_update_option_wprmenu_options', 'wprm_preserve_settings_during_
  * Start at version 1.0.0
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'WPRM_IMPORT_EXPORT_VERSION', '1.1.1' );
+define( 'WPRM_IMPORT_EXPORT_VERSION', '1.1.2' );
 
 require WPRM_IMP_EXP_DIR . 'includes/class-wprm-import-export.php';
 require WPRM_IMP_EXP_DIR . 'admin/class-admin-wprm-import-export.php';

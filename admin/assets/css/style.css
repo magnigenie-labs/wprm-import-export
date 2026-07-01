@@ -194,3 +194,29 @@
     background-position: center !important;
     background-repeat: no-repeat !important;
 }
+
+/* Modern iPhone device frame overrides for import showcase */
+.mg-box-content ul.wprmenu-demo-list li {
+    border: 10px #1e293b solid !important; /* Sleek, thin dark titanium bezel */
+    border-radius: 40px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
+    overflow: hidden !important;
+    height: 520px !important;
+    background: #f8fafc !important;
+}
+
+/* Dynamic Island notch */
+.mg-box-content ul.wprmenu-demo-list li::before {
+    content: '' !important;
+    display: block !important;
+    width: 80px !important;
+    height: 20px !important;
+    position: absolute !important;
+    top: 15px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: #000000 !important;
+    border-radius: 12px !important;
+    z-index: 100 !important;
+    box-shadow: inset 0 0 4px rgba(255, 255, 255, 0.2) !important;
+}

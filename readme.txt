@@ -3,7 +3,7 @@ Contributors: magnigenie
 Tags: wp responsive menu, import, export, menu templates, settings migration
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,6 +18,11 @@ WP Responsive Menu - Import/Export plugin adds robust import and export capabili
 3. Access the demo manager from the 'WPR Menu Demo' menu in your WordPress Dashboard.
 
 == Changelog ==
+
+= 1.1.2 =
+* Added: 15 brand new, modern JSON templates for the Pro version (Classic Corporate, Neon Cyberpunk, Elegance Premium, Retro Arcade, Eco Greenery, Coffee Shop, Tech Start, Art & Creative, Luxury Pearl, Modern Agency, WooCommerce Store, Travel Explorer, Fitness Peak, Foodie Delight, and Vintage Gold).
+* Improved: Removed device borders and background details from the thumbnail images, leaving only flat, clean UI previews.
+* Improved: Updated the showcase device frames dynamically to modern thin-bezel smartphone models with a Dynamic Island notch via admin CSS overrides.
 
 = 1.1.1 =
 * Fixed: Updated seeder logic to force-overwrite default template assets, resolving issues where old thumbnail images wouldn't update on the server.
