@@ -3,7 +3,7 @@ Contributors: magnigenie
 Tags: wp responsive menu, import, export, menu templates, settings migration
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,6 +18,11 @@ WP Responsive Menu - Import/Export plugin adds robust import and export capabili
 3. Access the demo manager from the 'WPR Menu Demo' menu in your WordPress Dashboard.
 
 == Changelog ==
+
+= 1.0.2 =
+* Fixed: Added robust database migration and merge logic to automatically move any pre-existing custom templates (such as "Big Shopping" and "Windom Academy") from the old `json_data` table to the new `wprm_import_export_data` table while preserving their original IDs.
+* Fixed: Automatically copies files of migrated templates from the plugin folder to the new uploads directory.
+* Fixed: Added a self-healing DB check on init to automatically set up the database table.
 
 = 1.0.1 =
 * Added: Feature to download template JSON settings files directly from the dashboard.

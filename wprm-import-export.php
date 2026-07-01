@@ -16,7 +16,7 @@
  * Plugin Name:       WP Responsive Menu - Import/Export
  * Plugin URI:        wprm_import_export
  * Description:       This Plugin Will Add Import/Export Functionality to WP Responsive Menu.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Author:            Magnigenie
  * Author URI:        https://restropress.com/
  * License:           GPL-2.0+
@@ -169,14 +169,77 @@ function wprm_seed_default_templates() {
 register_activation_hook( WPRM_IMP_EXP_FILE, 'activate_wprm_import_export' );
 
 /**
- * Automatically check and create the database table if it doesn't exist.
+ * Automatically check, create, and migrate/merge the database table from the old schema if present.
  */
 function wprm_check_database_table() {
 	global $wpdb;
-	$table_name = $wpdb->prefix . 'wprm_import_export_data';
+	$new_table = $wpdb->prefix . 'wprm_import_export_data';
+	$old_table = $wpdb->prefix . 'json_data';
 
-	if ( $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $table_name ) ) !== $table_name ) {
-		activate_wprm_import_export();
+	$new_table_exists = $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $new_table ) ) === $new_table;
+
+	if ( ! $new_table_exists ) {
+		$charset_collate = $wpdb->get_charset_collate();
+		$sql = "CREATE TABLE IF NOT EXISTS $new_table (
+		`id` bigint(20) NOT NULL AUTO_INCREMENT,
+		`demoname` varchar(255) NOT NULL,
+		`filetype` varchar(50) NOT NULL,
+		`thumbnail` varchar(255) NOT NULL,
+		`filename` varchar(255) NOT NULL,
+		PRIMARY KEY (`id`)
+		) $charset_collate;";
+
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		dbDelta( $sql );
+	}
+
+	// Migrate/Merge entries from the old table if it exists
+	$old_table_exists = $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $old_table ) ) === $old_table;
+	if ( $old_table_exists ) {
+		$old_rows = $wpdb->get_results( "SELECT * FROM $old_table" );
+		if ( ! empty( $old_rows ) ) {
+			$src_demo_dir = path_join( WPRM_IMP_EXP_DIR, 'admin/demo' );
+			$src_thumb_dir = path_join( WPRM_IMP_EXP_DIR, 'admin/thumbnail' );
+
+			$dst_demo_dir = wprm_get_upload_path( 'demo' );
+			$dst_thumb_dir = wprm_get_upload_path( 'thumbnail' );
+
+			foreach ( $old_rows as $row ) {
+				$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $new_table WHERE filename = %s", $row->filename ) );
+				if ( ! $exists ) {
+					$src_demo_file = path_join( $src_demo_dir, $row->filename );
+					$src_thumb_file = path_join( $src_thumb_dir, $row->thumbnail );
+
+					$dst_demo_file = path_join( $dst_demo_dir, $row->filename );
+					$dst_thumb_file = path_join( $dst_thumb_dir, $row->thumbnail );
+
+					if ( file_exists( $src_demo_file ) && ! file_exists( $dst_demo_file ) ) {
+						copy( $src_demo_file, $dst_demo_file );
+					}
+					if ( file_exists( $src_thumb_file ) && ! file_exists( $dst_thumb_file ) ) {
+						copy( $src_thumb_file, $dst_thumb_file );
+					}
+
+					$id_exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $new_table WHERE id = %d", $row->id ) );
+					$insert_data = array(
+						'demoname'  => $row->demoname,
+						'filetype'  => $row->filetype,
+						'thumbnail' => $row->thumbnail,
+						'filename'  => $row->filename,
+					);
+					if ( ! $id_exists ) {
+						$insert_data['id'] = $row->id;
+					}
+					$wpdb->insert( $new_table, $insert_data );
+				}
+			}
+		}
+	}
+
+	// If the new table is still empty after migration/merge, seed default templates
+	$new_count = $wpdb->get_var( "SELECT COUNT(*) FROM $new_table" );
+	if ( intval( $new_count ) === 0 ) {
+		wprm_seed_default_templates();
 	}
 }
 add_action( 'init', 'wprm_check_database_table' );
@@ -186,7 +249,7 @@ add_action( 'init', 'wprm_check_database_table' );
  * Start at version 1.0.0
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'WPRM_IMPORT_EXPORT_VERSION', '1.0.1' );
+define( 'WPRM_IMPORT_EXPORT_VERSION', '1.0.2' );
 
 require WPRM_IMP_EXP_DIR . 'includes/class-wprm-import-export.php';
 require WPRM_IMP_EXP_DIR . 'admin/class-admin-wprm-import-export.php';
