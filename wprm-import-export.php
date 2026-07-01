@@ -16,7 +16,7 @@
  * Plugin Name:       WP Responsive Menu - Import/Export
  * Plugin URI:        wprm_import_export
  * Description:       This Plugin Will Add Import/Export Functionality to WP Responsive Menu.
- * Version:           1.1.8
+ * Version:           1.1.9
  * Author:            Magnigenie
  * Author URI:        https://restropress.com/
  * License:           GPL-2.0+
@@ -93,6 +93,7 @@ function activate_wprm_import_export() {
 
 	// Seed default templates
 	wprm_seed_default_templates();
+	update_option( 'wprm_import_export_db_version', WPRM_IMPORT_EXPORT_VERSION );
 }
 
 /**
@@ -338,8 +339,12 @@ function wprm_check_database_table() {
 		}
 	}
 
-	// Seed default templates (idempotent: checks for existence first)
-	wprm_seed_default_templates();
+	// Seed default templates only on version upgrade or clean install
+	$installed_ver = get_option( 'wprm_import_export_db_version' );
+	if ( $installed_ver !== WPRM_IMPORT_EXPORT_VERSION ) {
+		wprm_seed_default_templates();
+		update_option( 'wprm_import_export_db_version', WPRM_IMPORT_EXPORT_VERSION );
+	}
 
 	// Clean up duplicate Pro Demo 4 if it exists in the database
 	$wpdb->query( "DELETE t1 FROM $new_table t1 INNER JOIN $new_table t2 WHERE t1.id > t2.id AND t1.filename = t2.filename AND t1.filename = 'wprmenu-settings-export-01-15-2025-06-41-05.json'" );
@@ -413,7 +418,7 @@ add_filter( 'pre_update_option_wprmenu_options', 'wprm_preserve_settings_during_
  * Start at version 1.0.0
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'WPRM_IMPORT_EXPORT_VERSION', '1.1.8' );
+define( 'WPRM_IMPORT_EXPORT_VERSION', '1.1.9' );
 
 require WPRM_IMP_EXP_DIR . 'includes/class-wprm-import-export.php';
 require WPRM_IMP_EXP_DIR . 'admin/class-admin-wprm-import-export.php';
