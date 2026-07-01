@@ -14,7 +14,8 @@ class WPRM_Import_Export {
 
         wp_enqueue_script( 'wprm-import-export-thumbnail', plugin_dir_url( __DIR__ ) . 'admin/assets/js/edit_thumbnail.js', array(), '1.0.0' );
         $data_array = array(
-            'ajax_url' => admin_url('admin-ajax.php')
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce'    => wp_create_nonce('wprm_ajax_nonce')
         );
         
         wp_localize_script('wprm-import-export-thumbnail', 'thumbnaildata', $data_array);
@@ -34,20 +35,23 @@ class WPRM_Import_Export {
     
     public function register_routes() {
 		register_rest_route( 'wprmenu-server', 'v1', array(
-			'methods'  => 'GET',
-			'callback' => array( $this, 'wprm_imp_exp_demo_validate' ),
+			'methods'             => 'GET',
+			'callback'            => array( $this, 'wprm_imp_exp_demo_validate' ),
+			'permission_callback' => '__return_true',
 		));
         register_rest_route( 'wprmenu-import/v2', '/type=(?P<post_type>[a-zA-Z0-9_-]+)/demo_name=(?P<post_id>\d+)/settings_id=(?P<settings_id>\d+)', array(
-            'methods'  => 'GET',
-            'callback' => array( $this, 'wprm_single_demo_import' ),
+            'methods'             => 'GET',
+            'callback'            => array( $this, 'wprm_single_demo_import' ),
+			'permission_callback' => '__return_true',
         )); 
     }
 
     public function wprm_imp_exp_demo_validate( WP_REST_Request $request ) {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'json_data';
+        $table_name = $wpdb->prefix . 'wprm_import_export_data';
         $results = $wpdb->get_results( "SELECT * FROM $table_name" );
-        $server_data = array();
+        $free_items = array();
+        $pro_items = array();
         foreach( $results as $row ) {
             $item = array(
                         'demo_id' => $row->id,
@@ -56,8 +60,8 @@ class WPRM_Import_Export {
                         'demo_type' => $row->filetype,
                         'thumbnail' => $row->thumbnail,
                         'filename' => $row->filename,
-                        'demo_url' => plugin_dir_url( __DIR__ ). 'admin/demo/' . $row->filename,
-                        'image_path' => plugin_dir_url( __DIR__ ). 'admin/thumbnail/' . $row->thumbnail
+                        'demo_url' => wprm_get_upload_url( 'demo' ) . '/' . $row->filename,
+                        'image_path' => wprm_get_upload_url( 'thumbnail' ) . '/' . $row->thumbnail
                     );
             if($row->filetype == 'Free') {
                 $free_items[] = $item;
@@ -79,37 +83,33 @@ class WPRM_Import_Export {
 
     public function wprm_single_demo_import( WP_REST_Request $request ) {
         global $wpdb;
-        $post_type = $request->get_param('post_type');
-        $post_id = $request->get_param('post_id');
-        $settings_id = $request->get_param('settings_id');
-        $table_name = $wpdb->prefix . 'json_data';
-        $results = $wpdb->get_results( "SELECT * FROM $table_name" );
-        $response = array();
+        $post_type = sanitize_text_field( $request->get_param('post_type') );
+        $post_id = intval( $request->get_param('post_id') );
+        $settings_id = intval( $request->get_param('settings_id') );
+        $table_name = $wpdb->prefix . 'wprm_import_export_data';
         
-        foreach( $results as $row ) {
-            // $item = array(
-            //     'demo_id' => $row->id,
-            //     'settings' => $row->id,
-            //     'demoname' => $row->demoname,
-            //     'demo_type' => $row->filetype,
-            //     'thumbnail' => $row->thumbnail,
-            //     'filename' => $row->filename,
-            //     'demo_url' => plugin_dir_url( __DIR__ ). 'admin/demo/' . $row->filename,
-            //     'image_path' => plugin_dir_url( __DIR__ ). 'admin/thumbnail/' . $row->thumbnail
-            // );
-            
-            if( $post_type == $row->filetype && $post_id == $row->id && $settings_id == $row->id ) {
-                $json_url = plugin_dir_url( __DIR__ ). 'admin/demo/' . $row->filename;
-                
-                $response = wp_safe_remote_get($json_url); // Use wp_safe_remote_get() to retrieve remote data
-
-                if (is_wp_error($response)) {
-                    return new WP_Error('json_error', 'Failed to fetch JSON data.', array('status' => 500));
-                }
-            
-                $json_data = $response;
-            }
+        $row = $wpdb->get_row( $wpdb->prepare(
+            "SELECT * FROM $table_name WHERE filetype = %s AND id = %d",
+            $post_type,
+            $post_id
+        ) );
+        
+        if ( ! $row || $settings_id !== intval( $row->id ) ) {
+            return new WP_Error('not_found', 'Demo template not found.', array('status' => 404));
         }
+
+        $json_path = wprm_get_upload_path( 'demo' ) . '/' . $row->filename;
+
+        if ( ! file_exists( $json_path ) ) {
+            return new WP_Error('json_error', 'Template file does not exist.', array('status' => 500));
+        }
+
+        $json_content = file_get_contents( $json_path );
+        $json_data = array(
+            'body'     => $json_content,
+            'response' => array( 'code' => 200, 'message' => 'OK' )
+        );
+
         return $json_data;
     }
 }

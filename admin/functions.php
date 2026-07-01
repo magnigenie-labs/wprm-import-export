@@ -1,23 +1,34 @@
 <?php
 
+function wprm_ajax_filter_upload_dir_thumb( $dirs ) {
+    $dirs['subdir'] = '/wprm-templates/thumbnail';
+    $dirs['path']   = $dirs['basedir'] . '/wprm-templates/thumbnail';
+    $dirs['url']    = $dirs['baseurl'] . '/wprm-templates/thumbnail';
+    return $dirs;
+}
+
 function upload_thumbnail_ajax() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( 'Forbidden', 403 );
+    }
+
+    check_ajax_referer( 'wprm_ajax_nonce', 'security' );
+
     global $wpdb;
 
-    // Check if the file is set and there are no errors
     if ( isset($_FILES['file']) && $_FILES['file']['error'] == 0 ) {
         $file = $_FILES['file'];
         $demo_id = intval( $_POST['demo_id'] );
 
-        // Define the upload directory
-        $upload_dir = plugin_dir_path(__FILE__) . 'thumbnail/';
-        $file_name = basename( $file['name'] );
-        $target_file = $upload_dir . $file_name;
+        add_filter( 'upload_dir', 'wprm_ajax_filter_upload_dir_thumb' );
+        $upload_overrides = array( 'test_form' => false );
+        $thumb_upload = wp_handle_upload( $file, $upload_overrides );
+        remove_filter( 'upload_dir', 'wprm_ajax_filter_upload_dir_thumb' );
 
-        // Move the uploaded file to the target directory
-        if ( move_uploaded_file($file['tmp_name'], $target_file) ) {
-            $table_name = $wpdb->prefix . 'json_data';
+        if ( ! isset( $thumb_upload['error'] ) ) {
+            $file_name = basename( $thumb_upload['file'] );
+            $table_name = $wpdb->prefix . 'wprm_import_export_data';
 
-            // Update the database with the new thumbnail file name
             $result = $wpdb->update( 
                 $table_name, 
                 array( 'thumbnail' => $file_name ), 
@@ -25,45 +36,46 @@ function upload_thumbnail_ajax() {
             );
 
             if ( $result !== false ) {
-                // Return the new thumbnail URL
-                wp_send_json_success(array('new_thumbnail_url' => plugin_dir_url(__FILE__) . 'thumbnail/' . $file_name));
+                wp_send_json_success(array('new_thumbnail_url' => wprm_get_upload_url( 'thumbnail' ) . '/' . $file_name));
             } else {
                 wp_send_json_error('Database update failed.');
             }
         } else {
-            wp_send_json_error('Failed to move the uploaded file.');
+            wp_send_json_error( $thumb_upload['error'] );
         }
     } else {
         wp_send_json_error('File upload failed.');
     }
 
-    wp_die(); // Required to terminate the AJAX request
+    wp_die();
 }
 add_action( 'wp_ajax_upload_thumbnail', 'upload_thumbnail_ajax' );
 
 function delete_thumbnail_ajax() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( 'Forbidden', 403 );
+    }
+
+    check_ajax_referer( 'wprm_ajax_nonce', 'security' );
+
     global $wpdb;
 
     if ( isset($_POST['demo_id']) ) {
-        $table_name = $wpdb->prefix . 'json_data';
+        $table_name = $wpdb->prefix . 'wprm_import_export_data';
         $demo_id = intval( $_POST['demo_id'] );
 
-        // Get the current thumbnail file path from the database
         $thumbnail = $wpdb->get_var( $wpdb->prepare( "SELECT thumbnail FROM $table_name WHERE id = %d", $demo_id ) );
 
         if ( $thumbnail ) {
-            // Define the thumbnail file path
-            $file_path = plugin_dir_path(__FILE__) . 'thumbnail/' . $thumbnail;
+            $file_path = wprm_get_upload_path( 'thumbnail' ) . '/' . $thumbnail;
 
-            // Check if the file exists and delete it
             if ( file_exists($file_path) ) {
                 unlink($file_path);
             }
 
-            // Update the database to remove the thumbnail reference
             $result = $wpdb->update( 
                 $table_name, 
-                array( 'thumbnail' => '' ), // Set the thumbnail field to empty
+                array( 'thumbnail' => '' ), 
                 array( 'id' => $demo_id )
             );
 
@@ -79,26 +91,28 @@ function delete_thumbnail_ajax() {
         wp_send_json_error('Invalid request.');
     }
 
-    wp_die(); // Terminate the AJAX request
+    wp_die();
 }
 add_action( 'wp_ajax_delete_thumbnail', 'delete_thumbnail_ajax' );
 
-// Function to handle editing demo name
 function edit_demo_name() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( 'Forbidden', 403 );
+    }
+
+    check_ajax_referer( 'wprm_ajax_nonce', 'security' );
+
     global $wpdb;
 
     if ( isset($_POST['demo_id']) && isset($_POST['new_demo_name']) ) {
-        $table_name = $wpdb->prefix . 'json_data';
+        $table_name = $wpdb->prefix . 'wprm_import_export_data';
         $demo_id = intval( $_POST['demo_id'] );
         $new_demo_name = sanitize_text_field( $_POST['new_demo_name'] );
-        // $new_thumbnail = sanitize_text_field( $_POST['new_thumbnail'] );
 
-        // Update the demo name and thumbnail in the database
         $result = $wpdb->update(
             $table_name,
             array( 
                 'demoname' => $new_demo_name
-                // 'thumbnail' => $new_thumbnail
             ),
             array( 'id' => $demo_id )
         );

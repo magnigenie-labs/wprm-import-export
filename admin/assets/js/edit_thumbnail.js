@@ -11,6 +11,7 @@ jQuery(document).ready(function($) {
             formData.append('file', fileInput);
             formData.append('demo_id', demoID);
             formData.append('action', 'upload_thumbnail');
+            formData.append('security', thumbnaildata.nonce);
 
             // Perform the AJAX request to upload the file
             $.ajax({
@@ -49,7 +50,8 @@ jQuery(document).ready(function($) {
                 type: 'POST',
                 data: {
                     action: 'delete_thumbnail',
-                    demo_id: demoID
+                    demo_id: demoID,
+                    security: thumbnaildata.nonce
                 },
                 success: function(response) {
                     if (response.success) {
@@ -93,8 +95,8 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'edit_demo_and_thumbnail',
                 demo_id: demoID,
-                new_demo_name: newDemoName
-                // new_thumbnail: newThumbnail
+                new_demo_name: newDemoName,
+                security: thumbnaildata.nonce
             },
             success: function(response) {
                 if (response.success) {

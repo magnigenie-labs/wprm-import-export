@@ -45,18 +45,44 @@ if ( ! defined( 'WPRM_IMP_EXP_URL' ) ) {
 }
 	
 /**
+ * Helper to get the upload directory path for templates.
+ */
+function wprm_get_upload_path( $sub = '' ) {
+	$upload_dir = wp_upload_dir();
+	$dir = path_join( $upload_dir['basedir'], 'wprm-templates' );
+	if ( ! empty( $sub ) ) {
+		$dir = path_join( $dir, $sub );
+	}
+	if ( ! file_exists( $dir ) ) {
+		wp_mkdir_p( $dir );
+	}
+	return $dir;
+}
+
+/**
+ * Helper to get the upload directory URL for templates.
+ */
+function wprm_get_upload_url( $sub = '' ) {
+	$upload_dir = wp_upload_dir();
+	$url = $upload_dir['baseurl'] . '/wprm-templates';
+	if ( ! empty( $sub ) ) {
+		$url .= '/' . $sub;
+	}
+	return $url;
+}
+
+/**
  * The code that runs during plugin activation.
  */
 function activate_wprm_import_export() {
-
 	global $wpdb;
 	$charset_collate = $wpdb->get_charset_collate();
-	$table_name = $wpdb->prefix . 'json_data';
+	$table_name = $wpdb->prefix . 'wprm_import_export_data';
 
 	$sql = "CREATE TABLE IF NOT EXISTS $table_name (
-	`id` int(50) NOT NULL AUTO_INCREMENT,
-	`demoname` varchar(50) NOT NULL,
-	`filetype` varchar(255) NOT NULL,
+	`id` bigint(20) NOT NULL AUTO_INCREMENT,
+	`demoname` varchar(255) NOT NULL,
+	`filetype` varchar(50) NOT NULL,
 	`thumbnail` varchar(255) NOT NULL,
 	`filename` varchar(255) NOT NULL,
 	PRIMARY KEY (`id`)
@@ -64,6 +90,81 @@ function activate_wprm_import_export() {
 
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	dbDelta( $sql );
+
+	// Seed default templates
+	wprm_seed_default_templates();
+}
+
+/**
+ * Seeds default templates and copies files to the uploads directory.
+ */
+function wprm_seed_default_templates() {
+	global $wpdb;
+	$table_name = $wpdb->prefix . 'wprm_import_export_data';
+
+	$src_demo_dir = path_join( WPRM_IMP_EXP_DIR, 'admin/demo' );
+	$src_thumb_dir = path_join( WPRM_IMP_EXP_DIR, 'admin/thumbnail' );
+
+	$dst_demo_dir = wprm_get_upload_path( 'demo' );
+	$dst_thumb_dir = wprm_get_upload_path( 'thumbnail' );
+
+	$default_templates = array(
+		array(
+			'demoname'  => 'Free Demo 1',
+			'filetype'  => 'Free',
+			'thumbnail' => 'demo1.png',
+			'filename'  => 'freedemo1.json',
+		),
+		array(
+			'demoname'  => 'Pro Demo 1',
+			'filetype'  => 'Pro',
+			'thumbnail' => 'demo2.png',
+			'filename'  => 'wprmenu-settings-export-01-13-2025-12-00-15.json',
+		),
+		array(
+			'demoname'  => 'Pro Demo 2',
+			'filetype'  => 'Pro',
+			'thumbnail' => 'demo3.png',
+			'filename'  => 'wprmenu-settings-export-01-15-2025-06-09-49.json',
+		),
+		array(
+			'demoname'  => 'Pro Demo 3',
+			'filetype'  => 'Pro',
+			'thumbnail' => 'demo4.png',
+			'filename'  => 'wprmenu-settings-export-01-15-2025-06-21-50.json',
+		),
+		array(
+			'demoname'  => 'Pro Demo 4',
+			'filetype'  => 'Pro',
+			'thumbnail' => 'demo5.png',
+			'filename'  => 'wprmenu-settings-export-01-15-2025-06-41-05.json',
+		),
+	);
+
+	foreach ( $default_templates as $tpl ) {
+		$src_demo_file = path_join( $src_demo_dir, $tpl['filename'] );
+		$src_thumb_file = path_join( $src_thumb_dir, $tpl['thumbnail'] );
+
+		$dst_demo_file = path_join( $dst_demo_dir, $tpl['filename'] );
+		$dst_thumb_file = path_join( $dst_thumb_dir, $tpl['thumbnail'] );
+
+		if ( file_exists( $src_demo_file ) && ! file_exists( $dst_demo_file ) ) {
+			copy( $src_demo_file, $dst_demo_file );
+		}
+		if ( file_exists( $src_thumb_file ) && ! file_exists( $dst_thumb_file ) ) {
+			copy( $src_thumb_file, $dst_thumb_file );
+		}
+
+		$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_name WHERE filename = %s", $tpl['filename'] ) );
+		if ( ! $exists ) {
+			$wpdb->insert( $table_name, array(
+				'demoname'  => $tpl['demoname'],
+				'filetype'  => $tpl['filetype'],
+				'thumbnail' => $tpl['thumbnail'],
+				'filename'  => $tpl['filename'],
+			));
+		}
+	}
 }
 register_activation_hook( WPRM_IMP_EXP_FILE, 'activate_wprm_import_export' );
 
