@@ -144,6 +144,7 @@ class WPRM_Admin_Import_Export {
                             <div class="actions">
                                 <button class="edit-demo-button" data-demo-id="<?php echo esc_attr( $row->id ); ?>">Edit</button>
                                 <button class="save-demo-button" data-demo-id="<?php echo esc_attr( $row->id ); ?>" style="display:none;">Save</button>
+                                <a href="<?php echo esc_url( wprm_get_upload_url( 'demo' ) . '/' . $row->filename ); ?>" class="button button-secondary download-demo-button" download="<?php echo esc_attr( $row->filename ); ?>" style="margin-left: 4px;">Download</a>
                             </div>
                              
                             <div class="actions">
@@ -177,6 +178,7 @@ class WPRM_Admin_Import_Export {
                             <div class="actions">
                                 <button class="edit-demo-button" data-demo-id="<?php echo esc_attr( $row->id ); ?>">Edit</button>
                                 <button class="save-demo-button" data-demo-id="<?php echo esc_attr( $row->id ); ?>" style="display:none;">Save</button>
+                                <a href="<?php echo esc_url( wprm_get_upload_url( 'demo' ) . '/' . $row->filename ); ?>" class="button button-secondary download-demo-button" download="<?php echo esc_attr( $row->filename ); ?>" style="margin-left: 4px;">Download</a>
                             </div>
                              
                             <div class="actions">
