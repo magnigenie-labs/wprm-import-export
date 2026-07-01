@@ -16,7 +16,7 @@
  * Plugin Name:       WP Responsive Menu - Import/Export
  * Plugin URI:        wprm_import_export
  * Description:       This Plugin Will Add Import/Export Functionality to WP Responsive Menu.
- * Version:           1.0.7
+ * Version:           1.0.8
  * Author:            Magnigenie
  * Author URI:        https://restropress.com/
  * License:           GPL-2.0+
@@ -118,31 +118,31 @@ function wprm_seed_default_templates() {
 		array(
 			'demoname'  => 'Sunset Minimalist',
 			'filetype'  => 'Free',
-			'thumbnail' => 'demo1.png',
+			'thumbnail' => 'sunset-minimalist.png',
 			'filename'  => 'sunset-minimalist.json',
 		),
 		array(
 			'demoname'  => 'Ocean Breeze',
 			'filetype'  => 'Free',
-			'thumbnail' => 'demo3.png',
+			'thumbnail' => 'ocean-breeze.png',
 			'filename'  => 'ocean-breeze.json',
 		),
 		array(
 			'demoname'  => 'Forest Pine',
 			'filetype'  => 'Free',
-			'thumbnail' => 'demo1.png',
+			'thumbnail' => 'forest-pine.png',
 			'filename'  => 'forest-pine.json',
 		),
 		array(
 			'demoname'  => 'Royal Amethyst',
 			'filetype'  => 'Free',
-			'thumbnail' => 'demo4.png',
+			'thumbnail' => 'royal-amethyst.png',
 			'filename'  => 'royal-amethyst.json',
 		),
 		array(
 			'demoname'  => 'Charcoal Sleek',
 			'filetype'  => 'Free',
-			'thumbnail' => 'demo2.png',
+			'thumbnail' => 'charcoal-sleek.png',
 			'filename'  => 'charcoal-sleek.json',
 		),
 		array(
@@ -185,7 +185,7 @@ function wprm_seed_default_templates() {
 			copy( $src_thumb_file, $dst_thumb_file );
 		}
 
-		$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_name WHERE filename = %s", $tpl['filename'] ) );
+		$exists = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE filename = %s", $tpl['filename'] ) );
 		if ( ! $exists ) {
 			$wpdb->insert( $table_name, array(
 				'demoname'  => $tpl['demoname'],
@@ -193,6 +193,11 @@ function wprm_seed_default_templates() {
 				'thumbnail' => $tpl['thumbnail'],
 				'filename'  => $tpl['filename'],
 			));
+		} else {
+			// Update the database with the new default thumbnail if it matches one of our default templates
+			if ( $exists->thumbnail !== $tpl['thumbnail'] ) {
+				$wpdb->update( $table_name, array( 'thumbnail' => $tpl['thumbnail'] ), array( 'id' => $exists->id ) );
+			}
 		}
 	}
 }
@@ -289,7 +294,7 @@ add_action( 'admin_init', 'wprm_clear_client_transient' );
  * Start at version 1.0.0
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'WPRM_IMPORT_EXPORT_VERSION', '1.0.7' );
+define( 'WPRM_IMPORT_EXPORT_VERSION', '1.0.8' );
 
 require WPRM_IMP_EXP_DIR . 'includes/class-wprm-import-export.php';
 require WPRM_IMP_EXP_DIR . 'admin/class-admin-wprm-import-export.php';
