@@ -12,7 +12,7 @@ class WPRM_Import_Export {
 	
     public function enqueue_script() {
 
-        wp_enqueue_script( 'wprm-import-export-thumbnail', plugin_dir_url( __DIR__ ) . 'admin/assets/js/edit_thumbnail.js', array(), WPRM_IMPORT_EXPORT_VERSION );
+        wp_enqueue_script( 'wprm-import-export-thumbnail', plugin_dir_url( __DIR__ ) . 'admin/assets/js/edit_thumbnail.js', array( 'jquery' ), WPRM_IMPORT_EXPORT_VERSION );
         $data_array = array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce'    => wp_create_nonce('wprm_ajax_nonce')
