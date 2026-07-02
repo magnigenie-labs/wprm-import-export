@@ -16,7 +16,7 @@
  * Plugin Name:       WP Responsive Menu - Import/Export
  * Plugin URI:        wprm_import_export
  * Description:       This Plugin Will Add Import/Export Functionality to WP Responsive Menu.
- * Version:           1.2.0
+ * Version:           1.2.1
  * Author:            Magnigenie
  * Author URI:        https://restropress.com/
  * License:           GPL-2.0+
@@ -418,7 +418,7 @@ add_filter( 'pre_update_option_wprmenu_options', 'wprm_preserve_settings_during_
  * Start at version 1.0.0
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'WPRM_IMPORT_EXPORT_VERSION', '1.2.0' );
+define( 'WPRM_IMPORT_EXPORT_VERSION', '1.2.1' );
 
 require WPRM_IMP_EXP_DIR . 'includes/class-wprm-import-export.php';
 require WPRM_IMP_EXP_DIR . 'admin/class-admin-wprm-import-export.php';
