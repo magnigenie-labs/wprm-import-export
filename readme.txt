@@ -2,8 +2,13 @@
 Contributors: magnigenie
 Tags: wp responsive menu, import, export, menu templates, settings migration
 Requires at least: 5.0
+<<<<<<< HEAD
 Tested up to: 7.1
 Stable tag: 1.1.9
+=======
+Tested up to: 6.9
+Stable tag: 1.2.2
+>>>>>>> 231f5e7691f81218bbd815a4fee663f3b664f28a
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,6 +23,9 @@ WP Responsive Menu - Import/Export plugin adds robust import and export capabili
 3. Access the demo manager from the 'WPR Menu Demo' menu in your WordPress Dashboard.
 
 == Changelog ==
+
+= 1.2.0 =
+* Fixed: Added 'jquery' as a dependency in the wp_enqueue_script for the admin thumbnail editor script, preventing script crashes due to early loading when jQuery isn't ready.
 
 = 1.1.9 =
 * Fixed: Added versioned database upgrade hooks to lock default template seeding. Seeding now runs only once per plugin update, allowing users to delete default templates (such as Free Demo 1) permanently.
@@ -64,6 +72,18 @@ WP Responsive Menu - Import/Export plugin adds robust import and export capabili
 
 = 1.0.7 =
 * Fixed: Added transient cache-busting logic. When admins visit the menu demo manager or import page, the local WordPress template cache transient (`wprm_api_demo_items_list`) is automatically cleared. This ensures new server-side templates show up immediately without a 24-hour cache delay.
+
+= 1.2.2 =
+* Fixed: Social media icons are now fully dynamic. All 15 Pro templates now use the plugin's native `social` field (WP Responsive Menu > Social > Add Your Social Links) instead of hardcoded HTML. Users can add, remove, and change social icons directly from the settings panel without editing JSON.
+* Fixed: Logo image is now controlled exclusively by the `bar_logo` upload field (WP Responsive Menu > General > Menu Bar Logo). The `content_before_menu_element` block no longer contains any hardcoded `<img>` or `<svg>` elements, so users can swap the logo freely from the Media Library.
+* Fixed: Removed all hardcoded `<i class="wpr-icon-*">` tags from `content_after_menu_element`. Social icons now render through the Pro plugin's `wpr_social_icons()` renderer which respects the `social_icon_color`, `social_icon_hover_color`, and `social_icon_font_size` settings.
+* Improved: `wpr_custom_css` for all 15 Pro templates now includes `.wpr_social_icons` styling rules so the native social block is styled to match each template's theme.
+
+= 1.2.1 =
+* Fixed: Completely rewrote all 15 Pro template JSON files with a full schema matching the plugin's import engine. Previous Pro templates were missing ~60 fields (wpr_custom_css, content_before_menu_element, content_after_menu_element, social_icon_color, search_icon_color, submenu_open_icon, submenu_close_icon, google_web_font_family, etc.), causing blank / no-output imports.
+* Improved: Each Pro template now ships with bespoke wpr_custom_css that loads a premium Google Font, styles the sidebar background/gradient, adds hover animations, left-border active indicators, and micro-animations — completely distinct from Free templates.
+* Improved: All 15 Pro templates now include fully styled before/after menu HTML blocks (banner headers, stat bars, category pills, social footer strips) rendered via content_before_menu_element and content_after_menu_element.
+* Improved: Each Pro template uses a unique colour palette, typography (Inter, Orbitron, Playfair Display, Press Start 2P, Outfit, Arvo, Fira Sans, Poppins, Cinzel, Montserrat, Rubik, Cabin, Oswald, Pacifico, EB Garamond), icon set, and slide direction.
 
 = 1.0.6 =
 * Added: 5 new gorgeously styled menu templates for the Free version: Sunset Minimalist, Ocean Breeze, Forest Pine, Royal Amethyst, and Charcoal Sleek.
